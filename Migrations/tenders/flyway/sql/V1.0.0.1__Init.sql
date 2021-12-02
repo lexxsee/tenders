@@ -2,31 +2,33 @@
 (
     Id int identity
         constraint Citizens_pk
-        primary key nonclustered,
-    SurName nvarchar not null,
-    FirstName nvarchar not null,
-    Patronymic nvarchar,
-    DateOfBirth datetime2 not null,
-    DateOfDeath datetime2
+            primary key nonclustered,
+    SurName nvarchar(100) not null,
+    FirstName nvarchar(100) not null,
+    Patronymic nvarchar(100),
+    DateOfBirth date not null,
+    DateOfDeath date
 )
-    go
+go
 
 create unique index Citizens_Id_uindex
     on Citizens (Id)
-    go
+go
 
 create table CitizenDocumentTypes
 (
     Id int not null
         constraint CitizenDocument_pk
             primary key nonclustered,
-    Name nvarchar not null
+    Name nvarchar(50) not null
 )
 go
 
 create unique index CitizenDocument_Id_uindex
     on CitizenDocumentTypes (Id)
 go
+
+
 
 create table CitizenDocuments
 (
@@ -40,7 +42,7 @@ create table CitizenDocuments
         constraint CitizenDocuments_Citizens_Id_fk
             references Citizens
             on delete cascade,
-    Number nvarchar not null
+    Number nvarchar(50) not null
 )
 go
 

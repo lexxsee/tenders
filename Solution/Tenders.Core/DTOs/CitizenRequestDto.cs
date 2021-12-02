@@ -5,7 +5,6 @@ namespace Tenders.Core.DTOs
 {
     public class CitizenRequestDto
     {
-
         public string SurName { get; set; }
 
         public string FirstName { get; set; }
@@ -16,9 +15,8 @@ namespace Tenders.Core.DTOs
 
         public DateTime? DateOfDeath { get; set; }
 
-        public String Inn { get; set; }
+        public string Inn { get; set; }
 
-        public String Snils { get; set; }
-
+        public string Snils { get; set; }
     }
 }

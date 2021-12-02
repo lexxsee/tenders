@@ -17,9 +17,7 @@ namespace Tenders.Api.Validators
                 .WithState(i => ErrorCodeEnum.FieldIsEmpty)
                 .WithMessage(i => "Поле '{PropertyName}' не может быть пустым");
 
-            RuleFor(i => i.Inn).NotNull()
-                .WithState(i => ErrorCodeEnum.FieldIsEmpty)
-                .WithMessage(i => "Поле '{PropertyName}' не может быть пустым");
+            RuleFor(i => i.Inn).SetValidator(i => new InnValidator());
 
             RuleFor(c => c.Snils).NotNull()
                 .WithState(i => ErrorCodeEnum.FieldIsEmpty)
@@ -29,7 +27,8 @@ namespace Tenders.Api.Validators
                 .WithState(p => ErrorCodeEnum.InvalidValue)
                 .WithMessage(p => "Значение поля '{PropertyName}' не может быть больше текущего дня");
 
-            RuleFor(c => c.DateOfBirth).LessThanOrEqualTo(p => DateTime.Now)
+            RuleFor(c => c.DateOfDeath)
+                .LessThanOrEqualTo(p => DateTime.Now)
                 .WithState(p => ErrorCodeEnum.InvalidValue)
                 .WithMessage(p => "Значение поля '{PropertyName}' не может быть больше текущего дня");
         }

@@ -20,7 +20,7 @@ namespace Tenders.Api.Validators
             RuleFor(x => x)
                 .Must(x => x is { Length: PInnLength })
                 .WithMessage(_ =>
-                    "длина может быть равна только {PInnLength}");
+                    $"длина инн должна быть {PInnLength}");
 
             RuleFor(x => x)
                 .Must(x => x != null && !x.StartsWith(IncorrectInnStart))

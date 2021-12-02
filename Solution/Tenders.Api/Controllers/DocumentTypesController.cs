@@ -1,4 +1,5 @@
-﻿using System.Threading.Tasks;
+﻿using System.Collections.Generic;
+using System.Threading.Tasks;
 using AutoMapper;
 using AutoMapper.QueryableExtensions;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +14,8 @@ namespace Tenders.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Produces("application/json")]
+
     public class DocumentTypesController : ControllerBase
     {
         private IUnitOfWorkFactory _uowFactory;
@@ -30,10 +33,10 @@ namespace Tenders.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<ActionResult<CitizenDocumentTypeDto>> Get()
+        public async Task<ActionResult<IReadOnlyList<CitizenDocumentTypeDto>>> Get()
         {
             var types = await _repository.All().ToListAsync();
-            return Ok(_mapper.Map<CitizenDocumentTypeDto>(types));
+            return Ok(_mapper.Map<IEnumerable<CitizenDocumentTypeDto>>(types));
 
         }
     }

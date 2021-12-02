@@ -1,0 +1,21 @@
+version: '3.7'
+
+services:
+  tenders.api:
+    container_name: tenders.api
+    image: tenders.api:${PLATFORM:-linux}-${TAG:-latest}
+    build:
+      context: .
+      dockerfile: Solution/Tenders.Api/Dockerfile
+
+  tenders.db:
+    container_name: tenders.db
+    image: "mcr.microsoft.com/mssql/server"
+
+
+  tenders.flyway:
+    container_name: tenders.flyway
+    image: tenders.flyway:${PLATFORM:-linux}-${TAG:-latest}
+    build:
+      context: Migrations/tenders
+      dockerfile: Dockerfile

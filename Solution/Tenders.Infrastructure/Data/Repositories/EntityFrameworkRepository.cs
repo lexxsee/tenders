@@ -1,11 +1,12 @@
 ﻿using System;
 using System.Linq;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Tenders.Core.Interfaces;
 
 namespace Tenders.Infrastructure.Data.Repositories
 {
-    public class EntityFrameworkRepository<T> : IRepository<T> where T : class
+    public sealed class EntityFrameworkRepository<T> : IRepository<T> where T : class
     {
         private readonly DbSet<T> _objectSet;
 
@@ -15,29 +16,48 @@ namespace Tenders.Infrastructure.Data.Repositories
             _objectSet = context.Set<T>();
         }
 
-        public virtual IQueryable<T> All()
+        public IQueryable<T> All()
         {
-
             return _objectSet;
         }
 
-        public virtual void Add(T entity)
+        public void Add(T entity)
         {
-
             if (entity == null)
             {
                 throw new ArgumentNullException(nameof(entity));
             }
+
             _objectSet.Add(entity);
         }
 
-        public virtual void Remove(T entity)
+        public async Task AddAsync(T entity)
         {
-
             if (entity == null)
             {
                 throw new ArgumentNullException(nameof(entity));
             }
+
+            await _objectSet.AddAsync(entity);
+        }
+
+        public void Edit(T entity)
+        {
+            if (entity == null)
+            {
+                throw new ArgumentNullException(nameof(entity));
+            }
+
+            Context.Entry(entity).State = EntityState.Modified;
+        }
+
+        public void Remove(T entity)
+        {
+            if (entity == null)
+            {
+                throw new ArgumentNullException(nameof(entity));
+            }
+
             _objectSet.Remove(entity);
         }
 

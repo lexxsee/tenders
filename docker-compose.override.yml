@@ -1,0 +1,22 @@
+version: '3.7'
+services:
+  tenders.api:
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+    ports:
+      - "3011:80"
+
+  tenders.db:
+    environment:
+      SA_PASSWORD: "Pass@word"
+      ACCEPT_EULA: "Y"
+    ports:
+      - 1433:1433
+    volumes:
+      - ./data:/var/lib/mssqlql/data
+
+  tenders.flyway:
+    environment:
+      - DB_USER=sa
+      - DB_PASSWORD=Pass@word
+      - DB_URL=jdbc:jtds:sqlserver://tenders.db:1433/master

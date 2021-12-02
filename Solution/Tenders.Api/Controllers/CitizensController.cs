@@ -1,73 +1,83 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Threading.Tasks;
-using AutoMapper;
+using Tenders.Api.Services;
 using Tenders.Core.DTOs;
-using Tenders.Core.Entities;
-using Tenders.Core.Interfaces;
-using Tenders.Infrastructure.Data.Persistence;
-using Tenders.Infrastructure.Data.Repositories;
-
-// For more information on enabling Web API for empty projects, visit https://go.microsoft.com/fwlink/?LinkID=397860
 
 namespace Tenders.Api.Controllers
 {
     [Route("api/[controller]")]
     [ApiController]
+    [Produces("application/json")]
     public class CitizensController : ControllerBase
     {
-        private IUnitOfWorkFactory _uowFactory;
-        private TenderDbContext _context;
-        private readonly IRepository<Citizen> _repository;
-        private readonly IMapper _mapper;
+        private readonly ICitizenService _citizenService;
 
-        public CitizensController(TenderDbContext context, IMapper mapper)
+        public CitizensController(ICitizenService citizenService)
         {
-            _context = context;
-            _mapper = mapper;
-            _uowFactory = new EntityFrameworkUnitOfWorkFactory(context);
-            _repository = new EntityFrameworkRepository<Citizen>(context);
+            _citizenService = citizenService;
         }
 
-        // GET: api/<CitizensController>
         [HttpGet]
-        public IEnumerable<string> Get()
+        public async Task<ActionResult<IReadOnlyList<CitizenDto>>> Get()
         {
-            return new string[] { "value1", "value2" };
+            return Ok(await _citizenService.GetAllAsync());
         }
 
-        // GET api/<CitizensController>/5
-        [HttpGet("{id}")]
-        public string Get(int id)
+        [HttpGet("search")]
+        public async Task<ActionResult<IEnumerable<CitizenDto>>> Get([FromQuery] CitizenFilterDto filter)
         {
-            return "value";
+            return Ok(await _citizenService.FindAsync(filter));
         }
 
-        // POST api/<CitizensController>
+        [HttpGet("cvs")]
+        [Produces("text/plain")]
+        public async Task<ActionResult<string>> GetCvs()
+        {
+            return Ok(await _citizenService.ExportToCvsAsync());
+        }
+
+
+        [HttpGet("search/document/{TypeId}/{Number}")]
+        public async Task<ActionResult<CitizenDto>> Get([FromRoute] CitizenDocumentFilterDto dto)
+        {
+            return Ok(await _citizenService.FindByDocumentAsync(dto));
+        }
+
         [HttpPost]
-        public void Post([FromBody] CitizenRequestDto value)
+        public async Task Post([FromBody] CitizenRequestDto value)
         {
             if (ModelState.IsValid)
             {
-                using IUnitOfWork uow = _uowFactory.Create();
-                var map = _mapper.Map<Citizen>(value);
-                _repository.Add(map);
-                uow.Save();
+                await _citizenService.AddAsync(value);
             }
         }
 
-        // PUT api/<CitizensController>/5
-        [HttpPut("{id}")]
-        public void Put(int id, [FromBody] string value)
+        [HttpPost("cvs")]
+        [Produces("text/plain")]
+        public async Task PostCvs([FromBody] string value)
         {
+            if (ModelState.IsValid)
+            {
+                await _citizenService.ImportFromCvsAsync(value);
+            }
         }
 
-        // DELETE api/<CitizensController>/5
-        [HttpDelete("{id}")]
-        public void Delete(int id)
+        [HttpPut("{id:int}")]
+        public async Task<IActionResult> Put(int id, [FromBody] CitizenRequestDto value)
         {
+            if (ModelState.IsValid)
+            {
+                await _citizenService.EditAsync(id, value);
+            }
+
+            return NoContent();
+        }
+
+        [HttpDelete("{id:int}")]
+        public async Task Delete(int id)
+        {
+            await _citizenService.RemoveAsync(id);
         }
     }
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Tenders.Core.Interfaces;
 
@@ -42,6 +43,7 @@ namespace Tenders.Infrastructure.Data.Repositories
                     CloseContext();
                 }
             }
+
             _disposed = true;
         }
 
@@ -55,11 +57,11 @@ namespace Tenders.Infrastructure.Data.Repositories
 
         #region IUnitOfWork Members
 
-        public void Save()
+        public async Task SaveAsync()
         {
             if (_context == null)
                 throw new InvalidOperationException("Context has not been initialized.");
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
         #endregion
